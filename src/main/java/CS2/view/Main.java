@@ -1,6 +1,6 @@
-package view;
+package CS2.view;
 
-import CS2.Client.model.ContactPerson;
+import CS2.model.ContactPerson;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -22,34 +22,21 @@ import java.util.List;
  **/
 public class Main {
 	
-	private static Connection con = null;
-	private final JTable table = new JTable();
 	private JFrame frame;
-	//数据标题
-	private final String[] headTitle = new String[]{"编号", "姓名", "地址", "手机号"};
-	private DefaultTableModel dtm = null;
-	private JTextField tx_id;
-	private JTextField tx_name;
-	private JTextField tx_address;
-	private JTextField tx_phone;
-	/**
-	 * Create the application.
-	 */
-	public Main() {
-		initialize();
-	}
-
+	private static Connection con = null;
+	
+	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 		
 		// 数据库连接字符串
-		private String conStr = "jdbc:mysql://YOUR_HOST/YOUR_DATABASE_NAME?Timezone=UTC&Unicode=true&characterEnconding=utf-8";//最新版本的mysql驱动
+		String conStr = "jdbc:mysql://localhost:3306/software_architecture?Timezone=UTC&Unicode=true&characterEnconding=utf-8";
 		// 数据库连接用户名
-		private String dbUserName = "YOUR_USERNAME";
+		String dbUserName = "root";
 		// 数据库连接密码
-		private String dbPassword = "YOUR_PASSWORD";
+		String dbPassword = "123456";
 		
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -59,7 +46,7 @@ public class Main {
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}//最新版本mysql驱动
+		}
 		
 		
 		EventQueue.invokeLater(new Runnable() {
@@ -75,75 +62,20 @@ public class Main {
 	}
 	
 	/**
-	 * 查询user信息数据
-	 *
-	 * @return
+	 * Create the application.
 	 */
-	public static List<ContactPerson> queryUserInfo() {
-		String sql = "select * from contact_person";
-		List<ContactPerson> list = new ArrayList<ContactPerson>();
-		try {
-			PreparedStatement ps = con.prepareStatement(sql);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next()) {
-				ContactPerson contactPerson = new ContactPerson();
-				contactPerson.setId(rs.getInt(1));
-				contactPerson.setName(rs.getString(2));
-				contactPerson.setPhone(rs.getString(3));
-				contactPerson.setAddress(rs.getString(4));
-				
-				list.add(contactPerson);
-			}
-			rs.close();
-			ps.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return list;
+	public Main() {
+		initialize();
 	}
 	
-	/**
-	 * 删除user信息
-	 *
-	 * @param id
-	 * @return
-	 */
-	public static boolean deleteUserInfo(int id) {
-		String sql = "delete from contact_person where id=?";
-		try {
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setInt(1, id);
-			int rs = ps.executeUpdate();
-			ps.close();
-			return rs != 0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-	
-	//增删改查方法
-	
-	/**
-	 * 添加user信息
-	 *
-	 * @return
-	 */
-	public static boolean addUserInfo(ContactPerson contactPerson) {
-		String sql = "insert into contact_person(name,phone,address) values (?,?,?)";
-		try {
-			PreparedStatement ps = con.prepareStatement(sql);
-			ps.setString(1, contactPerson.getName());
-			ps.setString(2, contactPerson.getAddress());
-			ps.setString(3, contactPerson.getPhone());
-			int rs = ps.executeUpdate();
-			ps.close();
-			return rs != 0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+	//数据标题
+	private final String[] headTitle = new String[]{"编号", "姓名", "手机号", "地址"};
+	private DefaultTableModel dtm = null;
+	private JTextField tx_id;
+	private JTextField tx_name;
+	private JTextField tx_address;
+	private JTextField tx_phone;
+	private final JTable table = new JTable();
 	
 	public Object[][] makeTable() {
 		List<ContactPerson> list = queryUserInfo();
@@ -308,13 +240,84 @@ public class Main {
 		});
 	}
 	
+	//增删改查方法
+	
+	/**
+	 * 查询user信息数据
+	 *
+	 * @return
+	 */
+	public static List<ContactPerson> queryUserInfo() {
+		String sql = "select * from contacts";
+		List<ContactPerson> list = new ArrayList<ContactPerson>();
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				ContactPerson contactPerson = new ContactPerson();
+				contactPerson.setId(rs.getInt(1));
+				contactPerson.setName(rs.getString(2));
+				contactPerson.setPhone(rs.getString(3));
+				contactPerson.setAddress(rs.getString(4));
+				
+				list.add(contactPerson);
+			}
+			rs.close();
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	/**
+	 * 删除user信息
+	 *
+	 * @param id
+	 * @return
+	 */
+	public static boolean deleteUserInfo(int id) {
+		String sql = "delete from contacts where id=?";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, id);
+			int rs = ps.executeUpdate();
+			ps.close();
+			return rs != 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	/**
+	 * 添加user信息
+	 *
+	 * @return
+	 */
+	public static boolean addUserInfo(ContactPerson contactPerson) {
+		String sql = "insert into contacts(name,phone,address) values (?,?,?)";
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, contactPerson.getName());
+			ps.setString(2, contactPerson.getPhone());
+			ps.setString(3, contactPerson.getAddress());
+			int rs = ps.executeUpdate();
+			ps.close();
+			return rs != 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	/**
 	 * 修改user信息
 	 *
 	 * @return
 	 */
 	public boolean modifyUserInfo(ContactPerson contactPerson) {
-		String sql = "update contact_person set name=?,phone=?,address=? where id=?";
+		String sql = "update contacts set name=?,phone=?,address=? where id=?";
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setString(1, contactPerson.getName());
@@ -329,7 +332,5 @@ public class Main {
 		}
 		return false;
 	}
-	
-	
 }
 
